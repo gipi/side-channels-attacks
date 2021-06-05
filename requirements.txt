@@ -1,4 +1,6 @@
-tqdm
+chipwhisperer==5.5.2
+hexdump
+jupyter==1.0.0
 matplotlib
 pandas
-hexdump
+tqdm

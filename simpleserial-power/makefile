@@ -54,6 +54,38 @@ ifneq ($(MUL2),)
 CDEFS += "-DMUL2"
 endif
 
+ifneq ($(SET_FF),)
+CDEFS += "-DSET_FF"
+endif
+
+ifneq ($(SET_ZERO),)
+CDEFS += "-DSET_ZERO=$(SET_ZERO)"
+endif
+
+ifneq ($(LDI),)
+CDEFS += "-DLDI=$(LDI)"
+endif
+
+ifneq ($(LDI_AFTER_JMP),)
+CDEFS += "-DLDI_AFTER_JMP=$(LDI_AFTER_JMP)"
+endif
+
+ifneq ($(SUM_A),)
+CDEFS += "-DSUM_A=$(SUM_A)"
+endif
+
+ifneq ($(SUM_B),)
+CDEFS += "-DSUM_B=$(SUM_B)"
+endif
+
+ifneq ($(ADC_AFTER_JMP),)
+CDEFS += "-DADC_AFTER_JMP=$(ADC_AFTER_JMP)"
+endif
+
+ifneq ($(FINAL_MOV),)
+CDEFS += "-DFINAL_MOV=$(FINAL_MOV)"
+endif
+
 #Add simpleserial project to build
 include ../simpleserial/Makefile.simpleserial
 
