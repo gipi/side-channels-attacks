@@ -42,6 +42,10 @@ ifeq ($(CRYPTO_OPTIONS),)
 CRYPTO_OPTIONS = AES128C
 endif
 
+ifneq ($(USE_TABLE),)
+CDEFS += "-DUSE_TABLE"
+endif
+
 ifneq ($(NOP),)
 CDEFS += "-DNOP"
 endif
