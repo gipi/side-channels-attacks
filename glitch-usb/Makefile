@@ -1,3 +1,4 @@
+USER_LIB_PATH = .
 ARDUINO_LIBS = USB_Host_Shield_Library_2.0
 
 
