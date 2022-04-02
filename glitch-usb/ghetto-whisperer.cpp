@@ -7,6 +7,7 @@
  */
 #include <avr/wdt.h>
 #include <avr/io.h>
+#include <util/delay.h>
 #include <usbhub.h>
 #include "pgmstrings.h"
 
@@ -22,6 +23,14 @@ inline void led_on () {
     PORTB |=  _BV(PB5);
 }
 
+inline void trigger_high() {
+    PORTC |= _BV(PC5);
+}
+
+inline void trigger_low() {
+    PORTC &= ~_BV(PC5);
+}
+
 USB     Usb;
 
 void reset_me() {
@@ -30,9 +39,12 @@ void reset_me() {
 }
 
 void setup_hw() {
+    /* setup led (useless) */
     DDRB  = _BV(PB5);
     PORTB = _BV(PB5);
 
+    /* setup trigger */
+    DDRC  = _BV(PC5);
 }
 
 void wait_for_usb_device() {
@@ -136,9 +148,9 @@ int main() {
     wait_for_usb_device();
 
     // Try to do a descriptor read that we can glitch into something else, and stream each received IN packet back to the host
-    //trigger_high();
+    trigger_high();
     streaming_ctrl_read(1, 0, bmREQ_GET_DESCR, USB_REQUEST_GET_DESCRIPTOR, 0, USB_DESCRIPTOR_CONFIGURATION, 0x0000, 0xffff);
-    //trigger_low();
+    trigger_low();
 
     // Start over with a software reset
     reset_me();
