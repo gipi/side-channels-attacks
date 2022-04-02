@@ -37,6 +37,7 @@ TARGET = simpleserial-power
 SRC += simpleserial-power.c
 
 # -----------------------------------------------------------------------------
+CRYPTO_TARGET = NONE
 
 ifeq ($(CRYPTO_OPTIONS),)
 CRYPTO_OPTIONS = AES128C
@@ -70,6 +71,10 @@ ifneq ($(LDI),)
 CDEFS += "-DLDI=$(LDI)"
 endif
 
+ifneq ($(BEFORE_LDI),)
+CDEFS += "-DBEFORE_LDI='$(BEFORE_LDI)'"
+endif
+
 ifneq ($(LDI_AFTER_JMP),)
 CDEFS += "-DLDI_AFTER_JMP=$(LDI_AFTER_JMP)"
 endif
@@ -84,6 +89,10 @@ endif
 
 ifneq ($(ADC_AFTER_JMP),)
 CDEFS += "-DADC_AFTER_JMP=$(ADC_AFTER_JMP)"
+endif
+
+ifneq ($(RETRIGGER),)
+CDEFS += "-DRETRIGGER=$(RETRIGGER)"
 endif
 
 ifneq ($(FINAL_MOV),)

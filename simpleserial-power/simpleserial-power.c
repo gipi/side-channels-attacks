@@ -29,11 +29,12 @@
  * using this
  * <https://bytes.com/topic/c/answers/213073-loop-equivalent-preprocessor#post821465>
  */
-// each entry is sixteen instructions long (more human friendly to look at the
+// each entry is fifteen instructions long (more human friendly to look at the
 // offsets and moreover is simpler to jump by shifting right the input value
 // by 4 + 1, since the instructions are two bytes long, but actually the
 // indexing is done using word so we can drop the last addend). At the end there is an
 // infinite loop with a nop just before to avoid pipeline noise.
+// This block executes in 17 clock cycles (1 for each nop, ldi and 3 for the jmp).
 #define _LDI(r,v)               \
     "nop\n\t"                   \
     "nop\n\t"                   \
@@ -50,7 +51,7 @@
     "ldi "#r", "#v"\n\t"        \
     "nop\n\t"                   \
     "jmp _end_jt""\n\t"
-// jmp is 4 bytes long
+// NOTE: jmp is 4 bytes long, 2 bytes the others
 
 // here we define the jump table via recursion
 #define JT0(v)  _LDI(r16,v)
@@ -72,20 +73,17 @@
 int main(void)
 {
     platform_init();
-	init_uart();	
+	init_uart();
 	trigger_setup();
 	
  	/* Uncomment this to get a HELLO message for debug */
-	/*
 	putch('h');
 	putch('e');
 	putch('l');
 	putch('l');
 	putch('o');
-	putch('\n');
-	*/
+    _delay_ms(500);
 		
-    _delay_ms(5000);
 #ifdef SET_ZERO
     asm volatile(
     "eor r0, r0" "\n\t"
@@ -112,6 +110,9 @@ int main(void)
 
     trigger_high();
     //_delay_ms(10);
+#ifdef RETRIGGER
+    trigger_low(); // if we want to retrigger later we must set it to low
+#endif
 
 #ifdef NOP
 
@@ -131,7 +132,7 @@ int main(void)
 #endif
 #ifdef USE_TABLE
     /*
-     * Get a char from the serial, intepret it as a byte and build into the
+     * Get a char from the serial, interpret it as a byte and build into the
      * register Z (r30:r31) the final address for the jump table.
      *
      * NOTE: the ATMega use word data type to reference instruction addresses,
@@ -179,6 +180,9 @@ int main(void)
 #ifdef LDI_AFTER_JMP
     "rjmp ." TOSTRING(LDI_AFTER_JMP)"\n\t"
 #endif
+#ifdef BEFORE_LDI
+    "and r16, r16" "\n\t"
+#endif
     "ldi r16, " TOSTRING(LDI) "\n\t"
     //"mov r0, r16" "\n\t"
     ::
@@ -203,6 +207,16 @@ int main(void)
     asm volatile(
     "ldi r17, " TOSTRING(SUM_A) "\n\t"
     "ldi r16, " TOSTRING(SUM_B) "\n\t"
+    "nop"       "\n\t"
+    "nop"       "\n\t"
+    "nop"       "\n\t"
+    "nop"       "\n\t"
+    "nop"       "\n\t"
+    "nop"       "\n\t"
+    "nop"       "\n\t"
+    "nop"       "\n\t"
+    "nop"       "\n\t"
+    "nop"       "\n\t"
 #if defined ADC_AFTER_JMP
     "rjmp ." TOSTRING(ADC_AFTER_JMP) "\n\t"
 #endif
@@ -246,6 +260,9 @@ int main(void)
 
     //_delay_ms(5000);
     //trigger_low();
+#ifdef RETRIGGER
+    trigger_high();
+#endif
 
     while(1);
 

@@ -60,8 +60,18 @@ uint8_t echo_signature(uint8_t* input) {
     return 0;
 }
 
+uint8_t memcmp_costant(uint8_t* a, uint8_t* b, size_t size) {
+    size_t counter;
+    uint8_t result = 0;
+
+    for (counter = 0 ; counter < size ; counter ++) {
+        result |= a ^ b;
+    }
+
+    return result;
+}
+
 uint8_t do_upgrade(uint8_t* firmware) {
-    trigger_high();
     uint8_t SIGNATURE[] = {
         111,  77,  82,  21, 132,  15,  4, 54,
         189, 218, 152, 253, 211, 129, 62, 50,
@@ -69,12 +79,13 @@ uint8_t do_upgrade(uint8_t* firmware) {
         158,  14,   7,  42, 177,  16, 65, 143
     };
     uint8_t mac[HMAC_SHA256_BYTES];
+    trigger_high();
     signature(mac, firmware, 64 * 8); /* NOTE: message length is in BITS!!! */
 
-    trigger_low();
 
     int check = memcmp(SIGNATURE, mac, HMAC_SHA256_BYTES);
 
+    trigger_low();
     if (check) {
         while(1);
     }
